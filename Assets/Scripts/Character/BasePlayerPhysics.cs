@@ -66,6 +66,7 @@ namespace ShardsOfCourage.Character
         [SerializeField] private float widthOfSkin;
         [SerializeField] private int sensorCount;
         [SerializeField] private float minSensorLength;
+        [SerializeField] private float lengthSeonsorSize;
         [SerializeField] private LayerMask physicsInteractionMask;
         
         [Header("slope properties")] [SerializeField]
@@ -87,10 +88,10 @@ namespace ShardsOfCourage.Character
         private Transform body;
         private float offsetAngle;
         private float lengthCharSize;
-        private float charSensorSize;
+        private Vector2 charSensorSize;
         
         private Vector2 halfCharSize => charSize * .5f;
-        private float halfSensorSize => charSensorSize * .5f;
+        private Vector2 halfSensorSize => charSensorSize * .5f;
         
         private Vector2 halfCharSizeDir => halfCharSize * ExtensionMethods.DegreesToVector2(-Mathf.Abs(collisions.slopeAngle)) +
                                            halfCharSize * ExtensionMethods.DegreesToVector2(-Mathf.Abs(collisions.slopeAngle)+90);
@@ -101,6 +102,14 @@ namespace ShardsOfCourage.Character
         { 
             this.body = body;
             offsetAngle = ExtensionMethods.Vector2ToDegrees(halfCharSize);
+            lengthCharSize = halfCharSize.magnitude - widthOfSkin;
+            lengthSeonsorSize = halfSensorSize.magnitude - widthOfSkin;
+            
+            horizontalCastHits = new RaycastHit2D[sensorCount];
+            verticalCastHits = new RaycastHit2D[sensorCount];
+            
+            collisions.isInsidePlatform = false;
+            
             
         }
 
@@ -159,25 +168,41 @@ namespace ShardsOfCourage.Character
         
         }
 
-        public void OnGravityUpdate()
-        { 
-        
+        public void OnGravityUpdate(PlayerPhysicsState state)
+        {
+            switch (state)
+            {
+                case PlayerPhysicsState.IsNormal:
+                    UpdateGravityOnNormal();
+                    break;
+                case PlayerPhysicsState.IsWater:
+                    UpdateGravityOnWater();
+                    break;
+            }
+        }
+
+        private void UpdateGravityOnWater()
+        {
+            
+        }
+
+        private void UpdateGravityOnNormal()
+        {
+            
         }
 
         public void ForceMovePoint(Vector2 dirOfMovement)
         {
-            
+            body.position = body.position.ToVector2() + dirOfMovement;
         }
 
         public void GiveMomentumVelocity(Vector2 velocity)
         {
-            
+            influenceVelocity = velocity;
         }
 
         
     }
 }
-
-
 
 
