@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,9 +8,100 @@ namespace ShardsOfCourage.Character
 {
     public class BasePlayerPhysics : MonoBehaviour, IPhysicsInfluence
     {
+
+        public enum PlayerPhysicsState
+        {
+            IsNormal,
+            IsWater
+        }
+
+        public struct Collisions
+        {
+            public bool isGrounded;
+            public bool isGroundedPrev;
+            public bool isLeftBlocked;
+            public bool isRightBlocked;
+            public bool isTouchLeft;
+            public bool isTouchRight;
+            public bool isTouchWall;
+            public bool isTouchWallPrev;
+            public bool isOnSlope;
+            public bool isOnMaxSlope;
+            public bool isInsidePlatform;
+            public bool isInWater;
+            public float slopeAngle;
+            public float errorAngle;
+            public float coyoteTime;
+            public float jumpPressedTime;
+            public float groundedTime;
+            
+            public void Reset()
+            {
+                //set all bools to false and all floats to 0
+                isGrounded = false;
+                isGroundedPrev = false;
+                isLeftBlocked = false;
+                isRightBlocked = false;
+                isTouchLeft = false;
+                isTouchRight = false;
+                isTouchWall = false;
+                isTouchWallPrev = false;
+                isOnSlope = false;
+                isOnMaxSlope = false;
+                isInsidePlatform = false;
+                isInWater = false;
+                slopeAngle = 0;
+                errorAngle = 0;
+                coyoteTime = 0;
+                jumpPressedTime = 0;
+                groundedTime = 0;
+            }
+        }
+
+        
+
+        [Header("properties")] [SerializeField]
+        private Vector2 charSize;
+        [SerializeField] private Vector2 sensorSize;
+        [SerializeField] private float widthOfSkin;
+        [SerializeField] private int sensorCount;
+        [SerializeField] private float minSensorLength;
+        [SerializeField] private LayerMask physicsInteractionMask;
+        
+        [Header("slope properties")] [SerializeField]
+        private float maxSlopeAngle;
+
+        [Header("Physics info")] 
+        public Collisions collisions;
+        public Vector2 velocity;
+        public Vector2 influenceVelocity;
+        
+        [SerializeField]private float gravity;
+        public float gravityDownMultiplier;
+        [SerializeField] private  float maxGravity;
+        
+        private RaycastHit2D[] verticalCastHits;
+        private RaycastHit2D[] horizontalCastHits;
+        private RaycastHit2D hitSide;
+
+        private Transform body;
+        private float offsetAngle;
+        private float lengthCharSize;
+        private float charSensorSize;
+        
+        private Vector2 halfCharSize => charSize * .5f;
+        private float halfSensorSize => charSensorSize * .5f;
+        
+        private Vector2 halfCharSizeDir => halfCharSize * ExtensionMethods.DegreesToVector2(-Mathf.Abs(collisions.slopeAngle)) +
+                                           halfCharSize * ExtensionMethods.DegreesToVector2(-Mathf.Abs(collisions.slopeAngle)+90);
+        
+        
+
         public void Init(Transform body)
         { 
-            //Initializing player size,sensor sizes,offset vaules, check if squeezes are possible
+            this.body = body;
+            offsetAngle = ExtensionMethods.Vector2ToDegrees(halfCharSize);
+            
         }
 
         public void PreUpdate()
@@ -74,12 +166,18 @@ namespace ShardsOfCourage.Character
 
         public void ForceMovePoint(Vector2 dirOfMovement)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public void GiveMomentumVelocity(Vector2 velocity)
         {
-            throw new System.NotImplementedException();
+            
         }
+
+        
     }
 }
+
+
+
+
