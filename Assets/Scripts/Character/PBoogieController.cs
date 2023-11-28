@@ -101,6 +101,15 @@ namespace ShardsOfCourage.Character
         public float groundMoveResponse;
         public float airMoveResponse;
         public float attackRate;
+        public float attackBufferTime;
+        public LayerMask attackLayer;
+        public float coyoteTime;
+        public float jumpBufferTime;
+        public float wallJumpBuffer;
+        [Header("Ability Properties")]
+        public float dashForce;
+        public float dashDuration;
+        
     }
 }
 
